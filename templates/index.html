@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Azure Flask App | Premium Service Status</title>
-    <meta name="description" content="Aplicación Flask optimizada y moderna, lista para desplegar en Azure App Service. Incluye monitoreo y diseño premium.">
-    
+    <meta name="description"
+        content="Aplicación Flask optimizada y moderna, lista para desplegar en Azure App Service. Incluye monitoreo y diseño premium.">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <style>
         :root {
             --bg-color: #0b0f19;
             --card-bg: rgba(17, 24, 39, 0.7);
             --card-border: rgba(255, 255, 255, 0.08);
-            --accent-primary: #6366f1; /* Indigo */
-            --accent-secondary: #a855f7; /* Purple */
-            --success-color: #10b981; /* Emerald */
+            --accent-primary: #6366f1;
+            /* Indigo */
+            --accent-secondary: #a855f7;
+            /* Purple */
+            --success-color: #10b981;
+            /* Emerald */
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
         }
@@ -47,7 +53,7 @@
             width: 600px;
             height: 600px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
             top: -200px;
             left: -200px;
             z-index: 1;
@@ -59,7 +65,7 @@
             width: 600px;
             height: 600px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0,0,0,0) 70%);
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
             bottom: -200px;
             right: -200px;
             z-index: 1;
@@ -252,21 +258,45 @@
 
         /* Animations */
         @keyframes blink {
-            0%, 100% { opacity: 0.4; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.1); }
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: scale(0.9);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
         }
 
         @keyframes pulse-border {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); }
-            50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.0); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.0);
+            }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div class="glow-bg"></div>
@@ -275,7 +305,7 @@
     <div class="container">
         <main class="card">
             <div class="brand">Azure Ready App</div>
-            <h1 id="main-heading">Python Flask App</h1>
+            <h1 id="main-heading">Python Flask App (Production) </h1>
             <p class="tagline">Lista para desplegar en Azure App Service</p>
 
             <div class="status-badge">
@@ -290,14 +320,15 @@
                 </div>
                 <div class="url-box" id="health-endpoint-url">/health</div>
                 <button class="btn" id="btn-check-health">Verificar Estado (/health)</button>
-                
+
                 <div class="response-container" id="response-container">
                     <pre class="response-box" id="health-response">Cargando...</pre>
                 </div>
             </section>
 
             <footer class="footer">
-                Documentación: <a href="https://learn.microsoft.com/es-es/azure/app-service/quickstart-python" target="_blank" rel="noopener noreferrer">Azure Quickstart</a>
+                Documentación: <a href="https://learn.microsoft.com/es-es/azure/app-service/quickstart-python"
+                    target="_blank" rel="noopener noreferrer">Azure Quickstart</a>
             </footer>
         </main>
     </div>
@@ -306,15 +337,15 @@
         document.getElementById('btn-check-health').addEventListener('click', async () => {
             const responseContainer = document.getElementById('response-container');
             const healthResponse = document.getElementById('health-response');
-            
+
             responseContainer.style.display = 'block';
             healthResponse.textContent = 'Enviando petición a /health...';
             healthResponse.style.color = '#e2e8f0';
-            
+
             try {
                 const res = await fetch('/health');
                 const data = await res.json();
-                
+
                 // Beautifully stringify the response
                 healthResponse.textContent = JSON.stringify(data, null, 2);
                 healthResponse.style.color = '#34d399'; // Green success color
@@ -325,4 +356,5 @@
         });
     </script>
 </body>
+
 </html>
