@@ -60,17 +60,11 @@ jobs:
         with:
           name: python-app
       
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_11BC8C3D85E04DDD9082493556553895 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E736EBCC183444D198B2A0AE90DE4C06 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9D83FD295A3F46FA9F5F2E61D804F1B9 }}
-
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: 'flaskapp'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           slot-name: 'staging'
           
