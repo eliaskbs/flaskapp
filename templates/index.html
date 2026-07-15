@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Flask App | Premium Service Status</title>
+    <meta name="description" content="Aplicación Flask optimizada y moderna, lista para desplegar en Azure App Service. Incluye monitoreo y diseño premium.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #6366f1; /* Indigo */
+            --accent-secondary: #a855f7; /* Purple */
+            --success-color: #10b981; /* Emerald */
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Decorative background glow circles */
+        .glow-bg {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+            top: -200px;
+            left: -200px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .glow-bg-bottom {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0,0,0,0) 70%);
+            bottom: -200px;
+            right: -200px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 640px;
+            padding: 24px;
+            z-index: 10;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Header Styles */
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 300;
+            margin-bottom: 32px;
+        }
+
+        /* Status Indicator Component */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 40px;
+            animation: pulse-border 2s infinite;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success-color);
+            animation: blink 1.5s infinite;
+        }
+
+        /* Interactive Playground */
+        .endpoint-tester {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .endpoint-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .method-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .url-box {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #38bdf8;
+            word-break: break-all;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .btn {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+        }
+
+        .btn:hover {
+            opacity: 0.95;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Response box */
+        .response-container {
+            margin-top: 16px;
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .response-box {
+            font-family: monospace;
+            background: #070913;
+            color: #34d399;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: left;
+            white-space: pre-wrap;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        /* Help Info Links */
+        .footer {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .footer a:hover {
+            color: var(--accent-secondary);
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes blink {
+            0%, 100% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); }
+            50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-bg"></div>
+    <div class="glow-bg-bottom"></div>
+
+    <div class="container">
+        <main class="card">
+            <div class="brand">Azure Ready App</div>
+            <h1 id="main-heading">Python Flask App</h1>
+            <p class="tagline">Lista para desplegar en Azure App Service</p>
+
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>Servidor en línea</span>
+            </div>
+
+            <section class="endpoint-tester">
+                <div class="endpoint-title">
+                    <span>Endpoint de Monitoreo</span>
+                    <span class="method-badge">GET</span>
+                </div>
+                <div class="url-box" id="health-endpoint-url">/health</div>
+                <button class="btn" id="btn-check-health">Verificar Estado (/health)</button>
+                
+                <div class="response-container" id="response-container">
+                    <pre class="response-box" id="health-response">Cargando...</pre>
+                </div>
+            </section>
+
+            <footer class="footer">
+                Documentación: <a href="https://learn.microsoft.com/es-es/azure/app-service/quickstart-python" target="_blank" rel="noopener noreferrer">Azure Quickstart</a>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('btn-check-health').addEventListener('click', async () => {
+            const responseContainer = document.getElementById('response-container');
+            const healthResponse = document.getElementById('health-response');
+            
+            responseContainer.style.display = 'block';
+            healthResponse.textContent = 'Enviando petición a /health...';
+            healthResponse.style.color = '#e2e8f0';
+            
+            try {
+                const res = await fetch('/health');
+                const data = await res.json();
+                
+                // Beautifully stringify the response
+                healthResponse.textContent = JSON.stringify(data, null, 2);
+                healthResponse.style.color = '#34d399'; // Green success color
+            } catch (err) {
+                healthResponse.textContent = `Error al conectar: ${err.message}`;
+                healthResponse.style.color = '#f87171'; // Red error color
+            }
+        });
+    </script>
+</body>
+</html>
